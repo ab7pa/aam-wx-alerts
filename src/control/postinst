@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "<br>AAM WX Alerts package has been installed<br>"
+
+exit 0

@@ -1,0 +1,10 @@
+Package: aam-wx-alerts
+Version: 0.1
+Depends: curl
+Provides:
+Source: package/aam-wx-alerts
+Section: net
+Priority: optional
+Maintainer: Steve Lewis (AB7PA)
+Architecture: all
+Description: Tool for NWS alert query by zone
