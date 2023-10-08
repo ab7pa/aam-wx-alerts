@@ -1,5 +1,5 @@
 #!/bin/sh
 
-rm -rf /tmp/wx-alerts
+rm -f /etc/cron.hourly/get-wx-alerts.lua
 
 exit 0

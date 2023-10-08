@@ -1,6 +1,5 @@
 #!/bin/sh
 
-mkdir -p /tmp/wx-alerts
 mkdir -p /www/aam
 
 exit 0
