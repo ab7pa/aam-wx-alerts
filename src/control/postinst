@@ -1,5 +1,7 @@
 #!/bin/sh
 
-echo "<br>AAM WX Alerts package has been installed<br>"
+/etc/cron.hourly/get-wx-alerts
+/usr/local/bin/aredn_message.sh
+echo "<br>Now edit /etc/cron.hourly/get-wx-alerts to specify your National Weather Service ZONE.<br>"
 
 exit 0

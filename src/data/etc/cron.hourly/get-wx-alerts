@@ -1,19 +1,20 @@
 #!/usr/bin/lua
--- Program:  get-wx-alerts.lua
--- Purpose:  To retrieve any current NWS weather alerts for a zone and update /www/wx.txt
+-- Program:  get-wx-alerts
+-- Purpose:  Retrieve any current NWS weather alerts for a zone and update /www/aam/wx.txt
 
 require("luci.jsonc")
 require("aredn.utils")
 require("nixio")
 
--- Initialize variables and wx_alert_file
+-- SET YOUR NWS ZONE HERE
+wx_zone = "AZZ548"
+
+-- Initialize variables
 wx_alert_file   = "/www/aam/wx.txt"
---wx_zone         = "AZZ548"
-wx_zone         = "AKZ332"
 connect_timeout = 5
 speed_time      = 10
 speed_limit     = 1000
-os.execute("cat /dev/null > " .. wx_alert_file)
+os.execute("/bin/cat /dev/null > " .. wx_alert_file)
 
 -- Query weather.gov API for zone alerts
 local wx = {}

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+/bin/cat /dev/null > /www/aam/wx.txt
+/usr/local/bin/aredn_message.sh
+
+exit 0

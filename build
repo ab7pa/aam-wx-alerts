@@ -1,19 +1,22 @@
 #!/bin/bash
 
-rm -rf *.ipk
-find . -name '*~' -delete
-
-### Build the package for AREDN nodes
+### Initialize variables
 export COPYFILE_DISABLE=1
 export VERSION=0.2
 
-# Main
+### Remove old files
+rm -rf *.ipk
+find . -name '*~' -delete
 rm -rf data.tar.gz control.tar.gz *.deb
+
+### Build the package for AREDN nodes
 cd src/data
 tar cf ../../data.tar `find . -type f | grep -v DS_Store | grep -v .pl | grep -v .pm`
+
 cd ../control
 sed -i "s/^Version: .*$/Version: ${VERSION}/" control
 tar cfz ../../control.tar.gz .
+
 cd ../..
 gzip data.tar
 COPYFILE_DISABLE=1 tar cfz aam-wx-alerts_${VERSION}_all.ipk control.tar.gz data.tar.gz debian-binary
