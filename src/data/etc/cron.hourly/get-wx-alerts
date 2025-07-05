@@ -1,31 +1,46 @@
-#!/usr/bin/lua
--- Program:  get-wx-alerts
--- Purpose:  Retrieve any current NWS weather alerts for a zone and update /www/aam/wx.txt
+#!/usr/bin/ucode
+/* 
+ * Program: get-wx-alerts.uc
+ * Purpose: Get the current NWS weather alerts for a specific zone and update /www/aam/wx.txt
+ * SET YOUR NWS ZONE in the WX_ZONE VARIABLE BELOW
+ */
 
-require("luci.jsonc")
-require("aredn.utils")
-require("nixio")
+const WX_ZONE = "AZZ548";
 
--- SET YOUR NWS ZONE HERE
-wx_zone = "AZZ548"
+import * as fs from "fs";
+import * as log from 'log';
+const WX_URL = sprintf("https://api.weather.gov/alerts/active?zone=%s", WX_ZONE);
 
--- Initialize variables
-wx_alert_file   = "/www/aam/wx.txt"
-connect_timeout = 5
-speed_time      = 10
-speed_limit     = 1000
-os.execute("/bin/cat /dev/null > " .. wx_alert_file)
+// Always clear the alerts file
+f = fs.open("/www/aam/wx.txt", "w");
+if(f) {
+  f.write("", "w");
+  f.close();
+} else {
+  log.syslog(log.LOG_INFO, "get-wx-alerts: cannot open wx.txt");
+  exit();
+}
 
--- Query weather.gov API for zone alerts
-local wx = {}
-wx = capture("/usr/bin/curl --silent --retry 3 --connect-timeout " .. connect_timeout .. " --speed-time " .. speed_time .. " --speed-limit " .. speed_limit .. " https://api.weather.gov/alerts/active?zone=" .. wx_zone .. " 2> /dev/null")
-if wx then
-  local wxalerts = luci.jsonc.parse(wx)
-  if wxalerts.features[1] then   -- Has WX alert info
-    local f = io.open(wx_alert_file, "w")
-    if f then
-      f:write(wxalerts.title .. "<br>" .. wxalerts.features[1].properties.headline )
-      f:close()
-    end
-  end
-end
+// Test for Internet connection, exit if none
+const p = fs.popen("exec /bin/ping -W1 -c1 8.8.8.8 2>/dev/null");
+if (p) {
+  const d = p.read("all");
+  p.close();
+  if (index(d, "1 packets received") == -1) {
+    log.syslog(log.LOG_INFO, "get-wx-alerts: no Internet available");
+    exit();
+  }
+}
+
+// Query for active alert info
+const wx = fs.popen(`exec /usr/bin/curl --silent --retry 3 --connect-timeout 5 --speed-time 10 --speed-limit 1000 ${WX_URL}`);
+if(wx) { // NWS forecast returned
+  const j = json(wx.read("all"));  //Parse the json retrieved
+  wx.close();
+
+  if(j.features) { //Test for active alert text
+    f = fs.open("/www/aam/wx.txt", "w");
+    if(f) { f.write(sprintf("%s<br>%s\n", j.title, j.features[0].properties.headline)); }
+    f.close();
+  }
+}
