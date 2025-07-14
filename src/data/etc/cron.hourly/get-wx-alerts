@@ -38,7 +38,7 @@ if(wx) { // NWS forecast returned
   const j = json(wx.read("all"));  //Parse the json retrieved
   wx.close();
 
-  if(j.features) { //Test for active alert text
+  if(j.features.length > 0) { //Test for active alert text
     f = fs.open("/www/aam/wx.txt", "w");
     if(f) { f.write(sprintf("%s<br>%s\n", j.title, j.features[0].properties.headline)); }
     f.close();
