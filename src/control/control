@@ -1,5 +1,5 @@
 Package: aam-wx-alerts
-Version: 0.6
+Version: 0.7
 Depends: curl
 Provides:
 Source: package/aam-wx-alerts
