@@ -12,12 +12,11 @@ import * as log from 'log';
 const WX_URL = sprintf("https://api.weather.gov/alerts/active?zone=%s", WX_ZONE);
 
 // Always clear the alerts file
-f = fs.open("/www/aam/wx.txt", "w");
+const f = fs.popen("exec cat /dev/null >/www/aam/wx.txt");
 if(f) {
-  f.write("", "w");
   f.close();
 } else {
-  log.syslog(log.LOG_INFO, "get-wx-alerts: cannot open wx.txt");
+  log.syslog(log.LOG_INFO, "get-wx-alerts: cannot clear wx.txt");
   exit();
 }
 
