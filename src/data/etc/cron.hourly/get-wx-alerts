@@ -11,20 +11,20 @@ import * as fs from "fs";
 import * as log from 'log';
 const WX_URL = sprintf("https://api.weather.gov/alerts/active?zone=%s", WX_ZONE);
 
-// Always clear the alerts file
-const f = fs.popen("exec cat /dev/null >/www/aam/wx.txt");
-if(f) {
-  f.close();
+// Clear the alerts file
+const c = fs.popen("exec cat /dev/null >/www/aam/wx.txt");
+if(c) {
+  c.close();
 } else {
   log.syslog(log.LOG_INFO, "get-wx-alerts: cannot clear wx.txt");
   exit();
 }
 
 // Test for Internet connection, exit if none
-const p = fs.popen("exec /bin/ping -W1 -c1 8.8.8.8 2>/dev/null");
-if (p) {
-  const d = p.read("all");
-  p.close();
+const i = fs.popen("exec /bin/ping -W1 -c1 8.8.8.8 2>/dev/null");
+if (i) {
+  const d = i.read("all");
+  i.close();
   if (index(d, "1 packets received") == -1) {
     log.syslog(log.LOG_INFO, "get-wx-alerts: no Internet available");
     exit();
@@ -38,7 +38,7 @@ if(wx) { // NWS forecast returned
   wx.close();
 
   if(j.features[0]) { //has active alert text
-    f = fs.open("/www/aam/wx.txt", "w");
+    const f = fs.open("/www/aam/wx.txt", "w");
     if(f) { f.write(sprintf("%s<br>%s\n", j.title, j.features[0].properties.headline)); }
     f.close();
   }
