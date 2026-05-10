@@ -3,6 +3,8 @@
  * Program: get-wx-alerts
  * Purpose: Get the current NWS weather alerts for a specific zone and update /www/aam/wx.txt
  * SET YOUR NWS ZONE in the WX_ZONE VARIABLE BELOW
+ * Install this program in /etc/cron.hourly
+ * Program puts weather alert into /www/aam/wx.txt
  */
 
 const WX_ZONE = "AZZ548";
@@ -11,12 +13,17 @@ import * as fs from "fs";
 import * as log from 'log';
 const WX_URL = sprintf("https://api.weather.gov/alerts/active?zone=%s", WX_ZONE);
 
+// Verify /www/aam/ directory
+if(! fs.opendir("/www/aam")) {
+  fs.mkdir("/www/aam");
+}
+
 // Clear the alerts file
 const c = fs.popen("exec cat /dev/null >/www/aam/wx.txt");
 if(c) {
   c.close();
 } else {
-  log.syslog(log.LOG_INFO, "get-wx-alerts: cannot clear wx.txt");
+  log.syslog(log.LOG_INFO, "get-wx-alerts: cannot clear wx file");
   exit();
 }
 
@@ -33,6 +40,8 @@ if (i) {
 
 // Query for active alert info
 const wx = fs.popen(`exec /usr/bin/curl --silent --retry 3 --connect-timeout 5 --speed-time 10 --speed-limit 1000 ${WX_URL}`);
+sleep(3000);
+
 if(wx) { // NWS forecast returned
   const j = json(wx.read("all"));  //Parse the json retrieved
   wx.close();
@@ -43,3 +52,4 @@ if(wx) { // NWS forecast returned
     f.close();
   }
 }
+

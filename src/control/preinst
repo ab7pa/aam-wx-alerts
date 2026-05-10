@@ -1,5 +1,0 @@
-#!/bin/sh
-
-mkdir -p /www/aam
-
-exit 0
